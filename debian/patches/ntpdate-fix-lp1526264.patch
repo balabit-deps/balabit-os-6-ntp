@@ -1,0 +1,19 @@
+Description: Fix ntpdate failure to correct dates in the future
+ Fix ntpdate not being able to correct a date in the future due to
+ invocation of undefined behaviour when doing -INT_MIN.
+Author: Alfonso Sanchez-Beato <alfonso.sanchez-beato@canonical.com>
+Bug-Ubuntu: https://bugs.launchpad.net/bugs/1526264
+Forwarded: http://bugs.ntp.org/show_bug.cgi?id=3023
+--- ntp-4.2.6.p5+dfsg.orig/ntpdate/ntpdate.c
++++ ntp-4.2.6.p5+dfsg/ntpdate/ntpdate.c
+@@ -1277,9 +1277,7 @@ clock_adjust(void)
+ 		dostep = 0;
+ 	} else {
+ 		absoffset = server->soffset;
+-		if (absoffset < 0)
+-			absoffset = -absoffset;
+-		dostep = (absoffset >= NTPDATE_THRESHOLD || absoffset < 0);
++		dostep = absoffset <= -NTPDATE_THRESHOLD || absoffset >= NTPDATE_THRESHOLD;
+ 	}
+ 
+ 	if (dostep) {

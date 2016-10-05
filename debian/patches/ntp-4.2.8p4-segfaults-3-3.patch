@@ -1,0 +1,163 @@
+From: Juergen Perlinger
+Subject: Segmentation Fault in DNS lookup during startup.
+Bug: http://bugs.ntp.org/show_bug.cgi?id=2831
+Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/ntp/+bug/1567540
+Origin: upstream, http://bk1.ntp.org/ntp-stable/?PAGE=cset&REV=57145d7dZelIoPAI7f2C_7HLVzESCg
+Last-Update: 2016-08-01
+
+2016-04-18 06:07:25+02:00, perlinger@ntp.org
+  [Bug 2831] Segmentation Fault in DNS lookup during startup.
+   - fixed yet another race condition in the threaded resolver code.
+
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,4 +1,6 @@
+ ---
++* [Bug 2831]  Segmentation Fault in DNS lookup during startup. perlinger@ntp.org
++  fixed yet another race condition in the threaded resolver code.
+ * [Bug 2954] Version 4.2.8p4 crashes on startup with sig fault
+   fixed data race conditions in threaded DNS worker. perlinger@ntp.org
+   limit threading warm-up to linux; FreeBSD bombs on it. perlinger@ntp.org
+--- a/include/ntp_worker.h
++++ b/include/ntp_worker.h
+@@ -162,6 +162,8 @@
+ extern	void	kill_asyncio	(int);
+ #endif
+ 
++extern void worker_global_lock(int inOrOut);
++
+ # ifdef WORK_PIPE
+ typedef	void	(*addremove_io_fd_func)(int, int, int);
+ extern	addremove_io_fd_func		addremove_io_fd;
+--- a/libntp/ntp_intres.c
++++ b/libntp/ntp_intres.c
+@@ -201,8 +201,6 @@
+ /* === forward declarations === */
+ static	u_int		reserve_dnschild_ctx(void);
+ static	u_int		get_dnschild_ctx(void);
+-static	void		alloc_dnsworker_context(u_int);
+-/* static	void		free_dnsworker_context(u_int); */
+ static	dnsworker_ctx *	get_worker_context(blocking_child *, u_int);
+ static	void		scheduled_sleep(time_t, time_t,
+ 					dnsworker_ctx *);
+@@ -949,47 +947,41 @@
+ }
+ 
+ 
+-static void
+-alloc_dnsworker_context(
+-	u_int idx
+-	)
+-{
+-	const size_t worker_context_sz = sizeof(*dnsworker_contexts[0]);
+-
+-	REQUIRE(NULL == dnsworker_contexts[idx]);
+-	dnsworker_contexts[idx] = emalloc_zero(worker_context_sz);
+-}
+-
+-
+ static dnsworker_ctx *
+ get_worker_context(
+ 	blocking_child *	c,
+ 	u_int			idx
+ 	)
+ {
+-	static size_t	ps = sizeof(dnsworker_contexts[0]);
+-	u_int	min_new_alloc;
+-	u_int	new_alloc;
+-	size_t	octets;
+-	size_t	new_octets;
++	u_int		min_new_alloc;
++	u_int		new_alloc;
++	size_t		octets;
++	size_t		new_octets;
++	dnsworker_ctx *	retv;
++
++	worker_global_lock(TRUE);
+ 
+ 	if (dnsworker_contexts_alloc <= idx) {
+ 		min_new_alloc = 1 + idx;
+ 		/* round new_alloc up to nearest multiple of 4 */
+ 		new_alloc = (min_new_alloc + 4) & ~(4 - 1);
+-		new_octets = new_alloc * ps;
+-		octets = dnsworker_contexts_alloc * ps;
++		new_octets = new_alloc * sizeof(dnsworker_ctx*);
++		octets = dnsworker_contexts_alloc * sizeof(dnsworker_ctx*);
+ 		dnsworker_contexts = erealloc_zero(dnsworker_contexts,
+ 						   new_octets, octets);
+ 		dnsworker_contexts_alloc = new_alloc;
++		retv = emalloc_zero(sizeof(dnsworker_ctx));
++		dnsworker_contexts[idx] = retv;
++	} else if (NULL == (retv = dnsworker_contexts[idx])) {
++		retv = emalloc_zero(sizeof(dnsworker_ctx));
++		dnsworker_contexts[idx] = retv;
+ 	}
+ 
+-	if (NULL == dnsworker_contexts[idx])
+-		alloc_dnsworker_context(idx);
+-	ZERO(*dnsworker_contexts[idx]);
+-	dnsworker_contexts[idx]->c = c;
+-
+-	return dnsworker_contexts[idx];
++	worker_global_lock(FALSE);
++
++	ZERO(*retv);
++	retv->c = c;
++	return retv;
+ }
+ 
+ 
+--- a/libntp/work_fork.c
++++ b/libntp/work_fork.c
+@@ -540,6 +540,11 @@
+ }
+ 
+ 
++void worker_global_lock(int inOrOut)
++{
++	(void)inOrOut;
++}
++
+ #else	/* !WORK_FORK follows */
+ char work_fork_nonempty_compilation_unit;
+ #endif
+--- a/libntp/work_thread.c
++++ b/libntp/work_thread.c
+@@ -63,7 +63,27 @@
+ static	int	queue_req_pointer(blocking_child *, blocking_pipe_header *);
+ static	void	cleanup_after_child(blocking_child *);
+ 
++static sema_type worker_mmutex;
++static sem_ref   worker_memlock;
+ 
++/* --------------------------------------------------------------------
++ * locking the global worker state table (and other global stuff)
++ */
++void
++worker_global_lock(
++	int inOrOut)
++{
++	if (worker_memlock) {
++		if (inOrOut)
++			wait_for_sem(worker_memlock, NULL);
++		else
++			tickle_sem(worker_memlock);
++	}
++}
++
++/* --------------------------------------------------------------------
++ * implementation isolation wrapper
++ */
+ void
+ exit_worker(
+ 	int	exitcode
+@@ -684,6 +704,9 @@
+ 	blocking_child *c
+ 	)
+ {
++	if (NULL == worker_memlock)
++		worker_memlock = create_sema(&worker_mmutex, 1, 1);
++
+ 	c->accesslock           = create_sema(&c->sem_table[0], 1, 1);
+ 	c->workitems_pending    = create_sema(&c->sem_table[1], 0, 0);
+ 	c->wake_scheduled_sleep = create_sema(&c->sem_table[2], 0, 1);

@@ -1,0 +1,55 @@
+From: Juergen Perlinger
+Subject: Version 4.2.8p4 crashes on startup with sig fault
+Bug: http://bugs.ntp.org/show_bug.cgi?id=2954
+Bug-Ubuntu: https://bugs.launchpad.net/ubuntu/+source/ntp/+bug/1567540
+Origin: upstream, https://github.com/ntp-project/ntp/commit/068fc45de9ea63ee77dd49dc66d3cf6bfe18a405
+Last-Update: 2016-08-01
+
+commit 068fc45de9ea63ee77dd49dc66d3cf6bfe18a405
+Author:  <jnperlin@hydra.localnet>
+Date:   Tue Nov 3 22:08:46 2015 +0100
+
+    [Bug 2954] Version 4.2.8p4 crashes on startup with sig fault
+     - limit threading warm-up to linux; FreeBSD bombs on it. perlinger@ntp.org
+
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,6 +1,7 @@
+ ---
+ * [Bug 2954] Version 4.2.8p4 crashes on startup with sig fault
+   fixed data race conditions in threaded DNS worker. perlinger@ntp.org
++  limit threading warm-up to linux; FreeBSD bombs on it. perlinger@ntp.org
+ ---
+ (4.2.8p4) 2015/10/21 Released by Harlan Stenn <stenn@ntp.org>
+ (4.2.8p4-RC1) 2015/10/06 Released by Harlan Stenn <stenn@ntp.org>
+--- a/ntpd/ntpd.c
++++ b/ntpd/ntpd.c
+@@ -27,12 +27,16 @@
+ #include "ntp_libopts.h"
+ #include "ntpd-opts.h"
+ 
+-/* there's a short treatise below what the thread stuff is for */
++/* there's a short treatise below what the thread stuff is for.
++ * [Bug 2954] enable the threading warm-up only for Linux.
++ */
+ #if defined(HAVE_PTHREADS) && HAVE_PTHREADS && !defined(NO_THREADS)
+ # ifdef HAVE_PTHREAD_H
+ #  include <pthread.h>
+ # endif
+-# define NEED_PTHREAD_WARMUP
++# if defined(linux)
++#  define NEED_PTHREAD_WARMUP
++# endif
+ #endif
+ 
+ #ifdef HAVE_UNISTD_H
+@@ -270,6 +274,9 @@
+  * This uses only the standard pthread API and should work with all
+  * implementations of pthreads. It is not necessary everywhere, but it's
+  * cheap enough to go on nearly unnoticed.
++ *
++ * Addendum: Bug 2954 showed that the assumption that this should work
++ * with all OS is wrong -- at least FreeBSD bombs heavily.
+  */
+ #ifdef NEED_PTHREAD_WARMUP
+ 
