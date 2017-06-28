@@ -1,3 +1,76 @@
+ntp (1:4.2.8p4+dfsg-3ubuntu5.5) xenial-security; urgency=medium
+
+  * SECURITY UPDATE: DoS via large request data value
+    - debian/patches/CVE-2016-2519.patch: check packet in
+      ntpd/ntp_control.c.
+    - CVE-2016-2519
+  * SECURITY UPDATE: DoS via responses with a spoofed source address
+    - debian/patches/CVE-2016-7426.patch: improve rate limiting in
+      ntpd/ntp_proto.c.
+    - CVE-2016-7426
+  * SECURITY UPDATE: DoS via crafted broadcast mode packet
+    - debian/patches/CVE-2016-7427-1.patch: improve replay prevention
+      logic in ntpd/ntp_proto.c.
+    - CVE-2016-7427
+  * SECURITY UPDATE: DoS via poll interval in a broadcast packet
+    - debian/patches/CVE-2016-7428.patch: ensure at least one poll interval
+      has elapsed in ntpd/ntp_proto.c, include/ntp.h.
+    - CVE-2016-7428
+  * SECURITY UPDATE: DoS via response for a source to an interface the
+    source does not use
+    - debian/patches/CVE-2016-7429-1.patch: add extra checks to
+      ntpd/ntp_peer.c.
+    - debian/patches/CVE-2016-7429-2.patch: check for NULL first in
+      ntpd/ntp_peer.c.
+    - debian/patches/CVE-2016-7429-3.patch: fix multicastclient regression
+      in ntpd/ntp_peer.c.
+    - CVE-2016-7429
+  * SECURITY UPDATE: incorrect initial sync calculations
+    - debian/patches/CVE-2016-7433.patch: use peer dispersion in
+      ntpd/ntp_proto.c.
+    - CVE-2016-7433
+  * SECURITY UPDATE: DoS via crafted mrulist query
+    - debian/patches/CVE-2016-7434.patch: added missing parameter
+      validation to ntpd/ntp_control.c.
+    - CVE-2016-7434
+  * SECURITY UPDATE: traps can be set or unset via a crafted control mode
+    packet
+    - debian/patches/CVE-2016-9310.patch: require AUTH in
+      ntpd/ntp_control.c.
+    - CVE-2016-9310
+  * SECURITY UPDATE: DoS when trap service is enabled
+    - debian/patches/CVE-2016-9311.patch: make sure peer events are
+      associated with a peer in ntpd/ntp_control.c.
+    - CVE-2016-9311
+  * SECURITY UPDATE: potential Overflows in ctl_put() functions
+    - debian/patches/CVE-2017-6458.patch: check lengths in
+      ntpd/ntp_control.c.
+    - CVE-2017-6458
+  * SECURITY UPDATE: overflow via long flagstr variable
+    - debian/patches/CVE-2017-6460.patch: check length in ntpq/ntpq-subs.c.
+    - CVE-2017-6460
+  * SECURITY UPDATE: buffer overflow in DPTS refclock driver
+    - debian/patches/CVE-2017-6462.patch: don't overrun buffer in
+      ntpd/refclock_datum.c.
+    - CVE-2017-6462
+  * SECURITY UPDATE: DoS via invalid setting in a :config directive
+    - debian/patches/CVE-2017-6463.patch: protect against overflow in
+      ntpd/ntp_config.c.
+    - CVE-2017-6463
+  * SECURITY UPDATE: Dos via malformed mode configuration directive
+    - debian/patches/CVE-2017-6464.patch: validate directives in
+      ntpd/ntp_config.c, ntpd/ntp_proto.c.
+    - CVE-2017-6464
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Wed, 28 Jun 2017 10:23:27 -0400
+
+ntp (1:4.2.8p4+dfsg-3ubuntu5.4) xenial; urgency=medium
+
+  * Fix ntp.dhcp to also check for pool and better handle spaces and tabs.
+    (LP: #1656801) 
+
+ -- Phil Roche <phil.roche@canonical.com>  Thu, 19 Jan 2017 11:06:04 +0000
+
 ntp (1:4.2.8p4+dfsg-3ubuntu5.3) xenial-security; urgency=medium
 
   * SECURITY UPDATE: Deja Vu replay attack on authenticated broadcast mode
