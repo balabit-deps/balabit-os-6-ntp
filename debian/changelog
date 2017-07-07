@@ -1,3 +1,12 @@
+ntp (1:4.2.8p4+dfsg-3ubuntu5.6) xenial; urgency=medium
+
+  * debian/ntpdate.if-up: Drop delta to stop/start service around ntpdate
+    updates - fixes ntp restart storms due to network changes, fixes
+    accidential start of ntp, avoids issues of ntpdate jumping too far while
+    running ntp was supposed to drift (LP: #1593907)
+
+ -- Christian Ehrhardt <christian.ehrhardt@canonical.com>  Fri, 07 Jul 2017 07:56:45 +0200
+
 ntp (1:4.2.8p4+dfsg-3ubuntu5.5) xenial-security; urgency=medium
 
   * SECURITY UPDATE: DoS via large request data value
