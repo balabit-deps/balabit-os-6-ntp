@@ -27,6 +27,7 @@ CVE-2016-2518.patch
 CVE-2016-4954.patch
 CVE-2016-4955.patch
 CVE-2016-4956.patch
+fix-2952-peer-sync.patch
 CVE-2016-2519.patch
 CVE-2016-7426.patch
 CVE-2016-7427-1.patch

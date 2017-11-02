@@ -1,0 +1,15 @@
+Index: ntp/ntpd/ntp_proto.c
+===================================================================
+--- ntp.orig/ntpd/ntp_proto.c
++++ ntp/ntpd/ntp_proto.c
+@@ -1350,7 +1350,9 @@ receive(
+ 	 * a valid packet in symmetric interleaved mode.
+ 	 */
+ 	} else if (peer->flip == 0) {
+-		if (L_ISZERO(&p_org) || !L_ISEQU(&p_org, &peer->aorg)) {
++		if (0 < hisstratum && L_ISZERO(&p_org)) {
++			L_CLR(&peer->aorg);
++		} else if (L_ISZERO(&p_org) || !L_ISEQU(&p_org, &peer->aorg)) {
+ 			peer->bogusorg++;
+ 			peer->flash |= TEST2;	/* bogus */
+ 			msyslog(LOG_INFO,
