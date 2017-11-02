@@ -1,3 +1,9 @@
+ntp (1:4.2.8p4+dfsg-3ubuntu5.6bb1) xenial; urgency=medium
+
+  * Balabit patched version
+
+ -- Balabit Platform Team <devnull@dev.null>  Thu, 02 Nov 2017 12:26:34 +0000
+
 ntp (1:4.2.8p4+dfsg-3ubuntu5.6) xenial; urgency=medium
 
   * debian/ntpdate.if-up: Drop delta to stop/start service around ntpdate
