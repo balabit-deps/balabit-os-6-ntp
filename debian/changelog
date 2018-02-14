@@ -1,3 +1,9 @@
+ntp (1:4.2.8p4+dfsg-3ubuntu5.7bb1) xenial; urgency=medium
+
+  * Balabit patched version
+
+ -- Balabit Platform Team <devnull@dev.null>  Wed, 14 Feb 2018 17:15:52 +0100
+
 ntp (1:4.2.8p4+dfsg-3ubuntu5.7) xenial; urgency=medium
 
   * d/ntp.init: fix lock path to match the ntpdate ifup hook. Furthermore
