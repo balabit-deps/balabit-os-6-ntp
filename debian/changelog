@@ -1,3 +1,9 @@
+ntp (1:4.2.8p4+dfsg-3ubuntu5.8) xenial; urgency=medium
+
+  * d/apparmor-profile: fix denial checking for running ntpdate (LP: #1749389)
+
+ -- Christian Ehrhardt <christian.ehrhardt@canonical.com>  Wed, 14 Feb 2018 13:10:39 +0100
+
 ntp (1:4.2.8p4+dfsg-3ubuntu5.7) xenial; urgency=medium
 
   * d/ntp.init: fix lock path to match the ntpdate ifup hook. Furthermore

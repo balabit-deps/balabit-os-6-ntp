@@ -68,6 +68,9 @@
 
   /{,var/}run/ntpd.pid w,
 
+  # to be able to check for running ntpdate
+  /run/lock/ntpdate wk,
+
   # samba4 ntp signing socket
   /{,var/}run/samba/ntp_signd/socket rw,
 
