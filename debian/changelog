@@ -1,3 +1,11 @@
+ntp (1:4.2.8p4+dfsg-3ubuntu5.7) xenial; urgency=medium
+
+  * d/ntp.init: fix lock path to match the ntpdate ifup hook. Furthermore
+    drop the usage of lockfile-progs calls and instead use flock directly.
+    This is a backport of changes made in 1:4.2.8p7+dfsg-1 (LP: #1706818)
+
+ -- Christian Ehrhardt <christian.ehrhardt@canonical.com>  Tue, 05 Sep 2017 17:24:43 +0200
+
 ntp (1:4.2.8p4+dfsg-3ubuntu5.6bb1) xenial; urgency=medium
 
   * Balabit patched version
