@@ -1,3 +1,9 @@
+ntp (1:4.2.8p4+dfsg-3ubuntu5.8bb1) xenial; urgency=medium
+
+  * Balabit patched version
+
+ -- Balabit Platform Team <devnull@dev.null>  Sun, 25 Feb 2018 07:39:57 +0100
+
 ntp (1:4.2.8p4+dfsg-3ubuntu5.8) xenial; urgency=medium
 
   * d/apparmor-profile: fix denial checking for running ntpdate (LP: #1749389)
