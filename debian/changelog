@@ -1,3 +1,9 @@
+ntp (1:4.2.8p4+dfsg-3ubuntu5.9bb1) xenial; urgency=medium
+
+  * Balabit patched version
+
+ -- Balabit Platform Team <devnull@dev.null>  Mon, 16 Jul 2018 16:21:28 +0200
+
 ntp (1:4.2.8p4+dfsg-3ubuntu5.9) xenial-security; urgency=medium
 
   * SECURITY UPDATE: code execution via buffer overflow in decodearr
