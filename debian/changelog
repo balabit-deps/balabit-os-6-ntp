@@ -1,3 +1,16 @@
+ntp (1:4.2.8p4+dfsg-3ubuntu5.9) xenial-security; urgency=medium
+
+  * SECURITY UPDATE: code execution via buffer overflow in decodearr
+    - debian/patches/CVE-2018-7183.patch: prevent writing beyons limits in
+      ntpq/ntpq.c.
+    - CVE-2018-7183
+  * SECURITY UPDATE: DoS via certain packets with a zero-origin timestamp
+    - debian/patches/CVE-2018-7185.patch: add additional checks to
+      ntpd/ntp_proto.c.
+    - CVE-2018-7185
+
+ -- Marc Deslauriers <marc.deslauriers@ubuntu.com>  Fri, 06 Jul 2018 15:34:25 -0400
+
 ntp (1:4.2.8p4+dfsg-3ubuntu5.8bb1) xenial; urgency=medium
 
   * Balabit patched version
