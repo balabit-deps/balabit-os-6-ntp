@@ -1,3 +1,13 @@
+ntp (1:4.2.8p4+dfsg-3ubuntu5.10) xenial-security; urgency=medium
+
+  * SECURITY UPDATE: crash or possible code execution via a long string as
+    the ipv4 host argument
+    - debian/patches/CVE-2018-12327.patch prevent overflow of host
+      in openhost() in ntpq/ntpq.c and ntpdc/ntpdc.c.
+    - CVE-2018-12327
+
+ -- Mark Morlino <mark.morlino@canonical.com>  Mon, 06 Jan 2020 09:25:46 -0500
+
 ntp (1:4.2.8p4+dfsg-3ubuntu5.9) xenial-security; urgency=medium
 
   * SECURITY UPDATE: code execution via buffer overflow in decodearr
