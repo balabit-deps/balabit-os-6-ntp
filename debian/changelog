@@ -1,3 +1,9 @@
+ntp (1:4.2.8p4+dfsg-3ubuntu5.10bb1) xenial; urgency=medium
+
+  * Balabit patched version
+
+ -- Balabit Platform Team <devnull@dev.null>  Sat, 11 Jan 2020 04:26:51 +0100
+
 ntp (1:4.2.8p4+dfsg-3ubuntu5.10) xenial-security; urgency=medium
 
   * SECURITY UPDATE: crash or possible code execution via a long string as
